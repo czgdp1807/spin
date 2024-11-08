@@ -335,7 +335,7 @@ def build(
     if gcov:
         meson_args_setup = meson_args_setup + ["-Db_coverage=true"]
 
-    setup_cmd = _meson_cli() + ["setup", abs_build_dir, "--prefix={}".format(abs_install_dir)] + meson_args_setup
+    setup_cmd = _meson_cli() + ["setup", build_dir, f"--prefix={prefix}"] + meson_args_setup
 
     if clean:
         print(f"Removing `{build_dir}`")
@@ -376,13 +376,6 @@ def build(
     )
 
     meson_args_install = list(meson_args.get("install", tuple()))
-    cmd = _meson_cli() + [
-            "install",
-            "--only-changed",
-            "-C",
-            build_dir
-        ] + meson_args_install
-
     p = _run(
          _meson_cli()
          + [
@@ -390,7 +383,11 @@ def build(
              "--only-changed",
              "-C",
              build_dir,
-             ] + meson_args_install,
+             "--destdir",
+             install_dir
+             if os.path.isabs(install_dir)
+             else os.path.relpath(abs_install_dir, abs_build_dir),
+         ] + meson_args_install,
          output=(not quiet) and verbose,
      )
 
