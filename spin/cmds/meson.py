@@ -381,10 +381,6 @@ def build(
             "--only-changed",
             "-C",
             build_dir,
-            "--destdir",
-            install_dir
-            if os.path.isabs(install_dir)
-            else os.path.relpath(abs_install_dir, abs_build_dir),
         ] + meson_install_args,
         output=(not quiet) and verbose,
     )
